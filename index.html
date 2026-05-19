@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' blob: data: https://*.basemaps.cartocdn.com https://demotiles.maplibre.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://*.basemaps.cartocdn.com https://demotiles.maplibre.org; worker-src 'self' blob:"
+    />
+    <title>Footprint</title>
+  </head>
+  <body>
+    <div id="app">
+      <aside id="sidebar">
+        <header>
+          <h1>Footprint</h1>
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">Dark</button>
+        </header>
+        <section id="dropzone" class="dropzone">
+          <p>Drop your Google Timeline JSON here</p>
+          <p class="hint">or <label class="link">click to choose a file<input type="file" id="file-input" accept=".json,application/json" hidden /></label></p>
+        </section>
+        <section id="stats" class="stats" hidden></section>
+        <section id="layer-toggles" class="layer-toggles" hidden>
+          <h2>Layers</h2>
+          <label><input type="radio" name="layer" value="countries" checked /> Countries</label>
+          <label><input type="radio" name="layer" value="states" /> States / regions</label>
+          <label><input type="radio" name="layer" value="cities" /> Cities</label>
+        </section>
+      </aside>
+      <main id="map"></main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

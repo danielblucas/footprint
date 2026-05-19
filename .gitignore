@@ -1,0 +1,31 @@
+# Node / Vite
+node_modules/
+dist/
+*.local
+
+# Tauri / Rust build output
+src-tauri/target/
+src-tauri/gen/schemas/
+
+# Raw Google Timeline exports — keep local only (contains precise GPS history)
+public/data/timeline-raw/
+
+# macOS
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
