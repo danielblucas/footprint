@@ -20,6 +20,7 @@ public/data/timeline-raw/
 
 # Claude Code local settings
 .claude/settings.local.json
+.claude/launch.json
 
 # Env files
 .env

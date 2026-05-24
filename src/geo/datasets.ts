@@ -1,8 +1,8 @@
 import type { FeatureCollection, Feature, Polygon, MultiPolygon, Point } from "geojson";
 
-const COUNTRIES_URL = "/data/countries.geojson";
-const STATES_URL = "/data/states.geojson";
-const CITIES_URL = "/data/cities.geojson";
+const COUNTRIES_URL = `${import.meta.env.BASE_URL}data/countries.geojson`;
+const STATES_URL = `${import.meta.env.BASE_URL}data/states.geojson`;
+const CITIES_URL = `${import.meta.env.BASE_URL}data/cities.geojson`;
 
 let countries: FeatureCollection<Polygon | MultiPolygon> | null = null;
 let states: FeatureCollection<Polygon | MultiPolygon> | null = null;

@@ -2,7 +2,7 @@ import { readTextFile, writeTextFile, mkdir, exists } from "@tauri-apps/plugin-f
 import { invoke } from "@tauri-apps/api/core";
 import type { RawTimelineImport, VisitedFile } from "../types";
 
-const VISITED_URL = "/data/visited.json";
+const VISITED_URL = `${import.meta.env.BASE_URL}data/visited.json`;
 
 const EMPTY: VisitedFile = { countries: [], states: [], cities: [], updatedAt: 0 };
 
