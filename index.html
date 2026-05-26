@@ -2,20 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#FAF7F2" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; img-src 'self' blob: data: https://*.basemaps.cartocdn.com https://demotiles.maplibre.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://*.basemaps.cartocdn.com https://demotiles.maplibre.org; worker-src 'self' blob:"
+      content="default-src 'self'; img-src 'self' blob: data: https://*.basemaps.cartocdn.com https://demotiles.maplibre.org; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:; connect-src 'self' https://*.basemaps.cartocdn.com https://demotiles.maplibre.org; worker-src 'self' blob:"
     />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <title>Footprint</title>
   </head>
   <body>
-    <div id="app">
-      <aside id="sidebar">
-        <header>
-          <h1>Footprint</h1>
-          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">Dark</button>
+    <div id="app" data-sidebar="open">
+      <aside id="sidebar" aria-label="App controls">
+        <header class="sidebar-header">
+          <div class="header-top">
+            <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
+              <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
+              <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            </button>
+          </div>
+          <div class="brand">
+            <img src="/logo.svg" alt="" class="brand-mark" width="40" height="40" />
+            <div class="brand-text">
+              <h1>Footprint</h1>
+              <p class="tagline">Your travels, mapped.</p>
+            </div>
+          </div>
         </header>
         <section id="dropzone" class="dropzone">
           <p>Drop your Google Timeline JSON here</p>
@@ -23,13 +41,21 @@
         </section>
         <section id="stats" class="stats" hidden></section>
         <section id="layer-toggles" class="layer-toggles" hidden>
-          <h2>Layers</h2>
-          <label><input type="radio" name="layer" value="countries" checked /> Countries</label>
-          <label><input type="radio" name="layer" value="states" /> States / regions</label>
-          <label><input type="radio" name="layer" value="cities" /> Cities</label>
+          <h2>View</h2>
+          <label><input type="radio" name="layer" value="countries" checked /> <span>Countries</span></label>
+          <label><input type="radio" name="layer" value="states" /> <span>States / regions</span></label>
+          <label><input type="radio" name="layer" value="cities" /> <span>Cities</span></label>
         </section>
       </aside>
       <main id="map"></main>
+      <button id="sidebar-toggle" class="floating-btn" type="button" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="4" y1="7" x2="20" y2="7" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="17" x2="20" y2="17" />
+        </svg>
+      </button>
+      <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -1,3 +1,5 @@
+import "@fontsource-variable/inter";
+import "@fontsource-variable/fraunces";
 import "./ui/styles.css";
 import { setupDropzone } from "./import/dropzone";
 import { joinVisits } from "./geo/spatialJoin";
@@ -8,6 +10,9 @@ import { renderStats } from "./ui/sidebar";
 import type { LayerKind, VisitedFile } from "./types";
 
 const THEME_KEY = "footprint.theme";
+const SIDEBAR_KEY = "footprint.sidebar";
+const MOBILE_BREAKPOINT = 768;
+
 function loadTheme(): MapTheme {
   const v = localStorage.getItem(THEME_KEY);
   return v === "dark" ? "dark" : "light";
@@ -17,12 +22,69 @@ function saveTheme(theme: MapTheme) {
 }
 function applyThemeToDocument(theme: MapTheme) {
   document.documentElement.setAttribute("data-theme", theme);
-  const toggle = document.getElementById("theme-toggle");
-  if (toggle) toggle.textContent = theme === "dark" ? "Light" : "Dark";
 }
 
 let currentTheme = loadTheme();
 applyThemeToDocument(currentTheme);
+
+const appEl = document.getElementById("app") as HTMLElement;
+const sidebarToggleBtn = document.getElementById("sidebar-toggle") as HTMLButtonElement;
+const sidebarBackdrop = document.getElementById("sidebar-backdrop") as HTMLElement;
+
+function isMobile(): boolean {
+  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
+}
+
+function initialSidebarState(): "open" | "closed" {
+  if (isMobile()) return "closed";
+  const saved = localStorage.getItem(SIDEBAR_KEY);
+  return saved === "closed" ? "closed" : "open";
+}
+
+function setSidebar(state: "open" | "closed", persist = true) {
+  appEl.setAttribute("data-sidebar", state);
+  sidebarToggleBtn.setAttribute("aria-expanded", state === "open" ? "true" : "false");
+  if (persist && !isMobile()) {
+    localStorage.setItem(SIDEBAR_KEY, state);
+  }
+}
+
+setSidebar(initialSidebarState(), false);
+
+function nudgeMapResize() {
+  // Resize during and after the CSS transition so MapLibre fills the new container.
+  requestAnimationFrame(() => map?.resize());
+  setTimeout(() => map?.resize(), 150);
+  setTimeout(() => map?.resize(), 300);
+}
+
+sidebarToggleBtn.addEventListener("click", () => {
+  const next = appEl.getAttribute("data-sidebar") === "open" ? "closed" : "open";
+  setSidebar(next);
+  nudgeMapResize();
+});
+
+sidebarBackdrop.addEventListener("click", () => {
+  setSidebar("closed");
+  nudgeMapResize();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && isMobile() && appEl.getAttribute("data-sidebar") === "open") {
+    setSidebar("closed");
+    nudgeMapResize();
+  }
+});
+
+let wasMobile = isMobile();
+window.addEventListener("resize", () => {
+  const nowMobile = isMobile();
+  if (nowMobile !== wasMobile) {
+    wasMobile = nowMobile;
+    setSidebar(nowMobile ? "closed" : (localStorage.getItem(SIDEBAR_KEY) === "closed" ? "closed" : "open"), false);
+  }
+  nudgeMapResize();
+});
 
 const dropzoneEl = document.getElementById("dropzone") as HTMLElement;
 const fileInput = document.getElementById("file-input") as HTMLInputElement;
@@ -36,9 +98,14 @@ let mapReady = false;
 const onMapReady = new Promise<void>((resolve) => {
   map.on("load", () => {
     mapReady = true;
+    map.resize();
     resolve();
   });
 });
+
+// Pin the map's canvas to the live container size — flex children sometimes
+// settle at the wrong dimensions before MapLibre's internal observer fires.
+new ResizeObserver(() => map.resize()).observe(mapEl);
 
 let current: VisitedFile = { countries: [], states: [], cities: [], updatedAt: 0 };
 
@@ -68,7 +135,6 @@ async function bootstrap() {
   await renderFromCurrent();
 }
 
-// Google Timeline drag-and-drop
 setupDropzone(dropzoneEl, fileInput, async (result, fileName) => {
   console.log(`Imported ${fileName}: ${result.visits.length} visits, ${result.points.length} points`);
   if (result.visits.length === 0 && result.points.length === 0) {

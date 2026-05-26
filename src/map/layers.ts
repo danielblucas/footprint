@@ -11,10 +11,10 @@ interface LayerState {
 
 let currentLayer: LayerKind = "countries";
 
-const VISITED_FILL = "#10b981";
-const VISITED_OUTLINE = "#059669";
-const NOT_VISITED_FILL = "#1e293b";
-const NOT_VISITED_OUTLINE = "#475569";
+const VISITED_FILL = "#CC6B49";
+const VISITED_OUTLINE = "#A85436";
+const NOT_VISITED_FILL = "#1E5F8A";
+const NOT_VISITED_OUTLINE = "#3D7BA8";
 
 function tagVisited<T extends Feature<Polygon | MultiPolygon> | Feature<Point>>(
   features: T[],

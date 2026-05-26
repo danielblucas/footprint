@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "mcp__computer-use__screenshot",
+      "mcp__computer-use__zoom",
+      "mcp__computer-use__wait"
+    ]
+  }
+}
