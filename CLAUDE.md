@@ -69,10 +69,13 @@ The import pipeline is the heart of the app:
    Semantic (`timelineObjects`), on-device export (`semanticSegments` / bare
    array), and `rawSignals`. Coordinates arrive as E7 ints, `geo:` strings, or
    `lat,lng` strings depending on format — hence the several small parse helpers.
-2. **Spatial join** (`src/geo/spatialJoin.ts`) — each visit is matched to its
+2. **Spatial join** (`src/geo/spatialJoin.ts`) — each coordinate is matched to its
    containing country and state polygon (bbox pre-filter, then Turf
    `booleanPointInPolygon`) and to the nearest city within 25 km. Returns sets of
-   visited IDs.
+   visited IDs. **Both** parser buckets are joined: `visits` (bucketed at ~110 m)
+   and `points` (~1.1 km, since raw breadcrumbs are far denser). Joining only
+   `visits` made legacy Records / `rawSignals` imports — which produce *no*
+   visits — a silent no-op that still reported success.
 3. **Persistence** (`src/store/visitedFile.ts`) — merges new visits into the
    existing set and writes `visited.json`. **Saving only works in the Tauri
    (desktop) build**; in the browser the store is read-only and `saveVisited`

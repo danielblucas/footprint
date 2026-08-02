@@ -176,6 +176,14 @@ async function renderFromCurrent() {
     renderStats(statsEl, statsFrom(current));
     togglesEl.hidden = false;
     snapshotBtn.hidden = false;
+  } else {
+    // Symmetric with the reveal above: unmarking the last visited place in
+    // write-mode returns the sidebar to its first-run state, instead of leaving
+    // the previous numbers (and a snapshot button with nothing to show) behind.
+    statsEl.hidden = true;
+    statsEl.replaceChildren();
+    togglesEl.hidden = true;
+    snapshotBtn.hidden = true;
   }
   updateHomeMarker();
   // Keep the layer module's home state current so popups can show a "Your home"
@@ -310,7 +318,9 @@ setupDropzone(dropzoneEl, fileInput, async (result, fileName) => {
     });
     return;
   }
-  const joined = await joinVisits(result.visits);
+  // Both buckets: formats differ in which one they populate, and the legacy
+  // Records export fills only `points` (see joinVisits).
+  const joined = await joinVisits(result.visits, result.points);
   const merged = mergeVisited(current, {
     countries: joined.visitedCountries,
     states: joined.visitedStates,
