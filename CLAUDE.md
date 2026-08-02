@@ -146,6 +146,14 @@ renders.
 
 - **No framework, no JSX.** Keep to plain TypeScript + direct DOM manipulation to
   match the existing style. State lives in module-level variables in `main.ts`.
+- **`hidden` vs. an explicit `display`.** The app shows/hides chrome by toggling
+  the `hidden` attribute, but *any* author `display` rule beats the browser's
+  built-in `[hidden] { display: none }` regardless of specificity — so an element
+  with `display: flex`/`inline-flex` silently ignores `hidden`. This has bitten
+  twice (`.stats`/`.layer-toggles`, then `#snapshot-btn` via `.icon-btn`, which
+  was therefore visible on every fresh install). There's one re-assert rule in
+  `styles.css`; **add any new display-setting, `hidden`-toggled element to it**,
+  and verify by looking at what renders, not at the DOM property.
 - **Browser vs. Tauri:** feature-detect with `isTauri()` (checks
   `__TAURI_INTERNALS__`). Any save/write path must guard against browser mode.
   Browser imports are **session-only previews**: the pipeline runs in memory,
