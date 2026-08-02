@@ -115,11 +115,15 @@
     "USA|Arizona|Flagstaff",
     "USA|Arkansas|Little Rock",
     "USA|California|Bakersfield",
+    "USA|California|Berkeley",
     "USA|California|Long Beach",
     "USA|California|Los Angeles",
     "USA|California|Monterey",
+    "USA|California|Oakland",
     "USA|California|Pasadena",
     "USA|California|San Francisco",
+    "USA|California|San Mateo",
+    "USA|California|Vallejo",
     "USA|Colorado|Denver",
     "USA|Florida|Miami",
     "USA|Georgia|Athens",
@@ -191,5 +195,5 @@
     "lon": -84.367642,
     "label": "Atlanta"
   },
-  "updatedAt": 1781315304650
+  "updatedAt": 1785701050503
 }
