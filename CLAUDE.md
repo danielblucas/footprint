@@ -121,13 +121,20 @@ nations, not territories — but the territory polygons still render as visited.
 
 ## Storage locations
 
-- **Desktop app** reads/writes `~/Documents/Claude/Footprint/public/data/visited.json`
-  (path defined in `src-tauri/src/lib.rs::get_data_dir`). This is the user's live
-  data, separate from the repo.
-- **Web app** fetches the `public/data/visited.json` that's committed to the repo
-  (read-only snapshot).
-- `scripts/sync-visited.sh` commits and pushes the repo's `visited.json` — the
-  bridge for publishing your desktop data to the web build.
+- **Desktop app** reads/writes the repo's own `public/data/visited.json`, via the
+  absolute path in `src-tauri/src/lib.rs::get_data_dir` (`~/Developer/Footprint/
+  public/data`). Desktop and web therefore share **one** file: an import shows up
+  as an uncommitted change, and `scripts/sync-visited.sh` publishes it with no
+  copying. Raw imports archive to that directory's gitignored `timeline-raw/`.
+- **Web app** fetches the same committed `public/data/visited.json` (read-only).
+- `scripts/sync-visited.sh` commits and pushes it — the bridge to the web build.
+- **Moving or renaming the repo breaks the desktop app**, silently: `loadVisited`
+  reads a missing file as "no data", so it opens empty rather than erroring. Fix
+  by updating `get_data_dir` **and** the `fs:scope` paths in
+  `capabilities/default.json` together — a mismatch builds fine and then denies
+  every write at runtime. (Before Aug 2026 this pointed at
+  `~/Documents/Claude/Footprint`, which was iCloud-synced; the separate-live-data
+  split it created meant a manual copy step that silently went stale.)
 
 ## Deployment
 

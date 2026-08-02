@@ -1,7 +1,18 @@
+/// Where the desktop app reads and writes `visited.json` (and archives raw
+/// imports to `timeline-raw/`): the repo's own `public/data`, which is the same
+/// file the web build ships and `scripts/sync-visited.sh` commits. One source of
+/// truth — an import shows up as an uncommitted change, ready to sync.
+///
+/// The path is absolute because a bundled `.app` has no useful working
+/// directory. That makes it brittle in one specific way: **move or rename the
+/// repo and this breaks**, and the app will silently open empty (`loadVisited`
+/// treats a missing file as "no data"). If the repo moves, change it here AND in
+/// `capabilities/default.json` — the fs plugin scope must match, or every write
+/// is denied at runtime while the build still succeeds.
 #[tauri::command]
 fn get_data_dir() -> String {
     let home = std::env::var("HOME").expect("HOME env var not set");
-    format!("{}/Documents/Claude/Footprint/public/data", home)
+    format!("{}/Developer/Footprint/public/data", home)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
