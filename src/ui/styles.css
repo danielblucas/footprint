@@ -544,10 +544,13 @@ body {
   pointer-events: none;
 }
 
-/* These sections set an explicit display, which would otherwise defeat the
-   [hidden] attribute the app toggles them with — re-assert hidden wins. */
+/* These elements set an explicit display, which would otherwise defeat the
+   [hidden] attribute the app toggles them with — re-assert hidden wins. Any
+   author `display` beats the UA [hidden] rule regardless of specificity, so a
+   new element that sets display AND is toggled via `hidden` belongs here too. */
 .stats[hidden],
-.layer-toggles[hidden] {
+.layer-toggles[hidden],
+.icon-btn[hidden] {
   display: none;
 }
 

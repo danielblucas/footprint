@@ -375,16 +375,21 @@ export function setHomeHandler(fn: HomeHandler): void {
   homeHandler = fn;
 }
 
-// Bind the popup's write-mode buttons (Mark/Unmark + Set as home). After a toggle
-// `setHTML` rebuilds the popup DOM, spending the `{ once: true }` listeners, so we
-// re-wire. `ll` is the [lng, lat] the popup is anchored at — what "Set as home"
-// snaps from.
+// Bind the popup's write-mode buttons (Mark/Unmark + Set as home). After either
+// action `setHTML` rebuilds the popup DOM, spending the `{ once: true }`
+// listeners, so we re-wire. `ll` is the [lng, lat] the popup is anchored at —
+// what "Set as home" snaps from.
+//
+// The home flag is re-derived on each (re-)wire rather than captured as a
+// parameter: both handlers await main.ts, which persists the change and pushes
+// the new pin through `setHomePoint` before resolving, so by re-render time
+// `currentHome` is already current. Capturing it left a popup showing "Set as
+// home" for a place that had just become home.
 function wirePopupActions(
   p: maplibregl.Popup,
   kind: LayerKind,
   feature: Feature,
   ll: [number, number],
-  isHome: boolean,
 ): void {
   const root = p.getElement();
   if (!root) return;
@@ -397,8 +402,8 @@ function wirePopupActions(
         toggleBtn.disabled = true;
         const nowVisited = await toggleHandler!(kind, visitedId(kind, feature));
         const props = { ...(feature.properties ?? {}), visited: nowVisited ? 1 : 0 };
-        p.setHTML(contentFor(kind, props, true, isHome));
-        wirePopupActions(p, kind, feature, ll, isHome);
+        p.setHTML(contentFor(kind, props, true, isHomeFeature(kind, feature)));
+        wirePopupActions(p, kind, feature, ll);
       },
       { once: true },
     );
@@ -412,7 +417,13 @@ function wirePopupActions(
         homeBtn.disabled = true;
         homeBtn.textContent = "Setting…";
         await homeHandler!(ll[0], ll[1]);
-        homeBtn.textContent = "Home set ✓";
+        // Re-render so this place picks up the 🏠 badge (and drops the now-
+        // redundant button) when the snap resolved to this very city. A snap to
+        // a *different* city just re-renders the button, ready to use again.
+        p.setHTML(
+          contentFor(kind, feature.properties as Record<string, unknown> | null, true, isHomeFeature(kind, feature)),
+        );
+        wirePopupActions(p, kind, feature, ll);
       },
       { once: true },
     );
@@ -471,7 +482,7 @@ export function initInteractions(map: MlMap): void {
         .setHTML(contentFor(kind, feature.properties as Record<string, unknown> | null, canToggle, home))
         .addTo(map);
       pinnedId = id;
-      if (canToggle) wirePopupActions(popup, kind, feature as unknown as Feature, ll, home);
+      if (canToggle) wirePopupActions(popup, kind, feature as unknown as Feature, ll);
       // Keep pinnedId in sync however the popup closes (✕, re-click, replaced).
       popup.on("close", () => {
         if (pinnedId === id) pinnedId = null;
@@ -619,7 +630,7 @@ export function openFeaturePopup(map: MlMap, kind: LayerKind, feature: Feature):
     .setHTML(contentFor(kind, props, canToggle, home))
     .addTo(map);
   pinnedId = id;
-  if (canToggle) wirePopupActions(popup, kind, tagged, ll, home);
+  if (canToggle) wirePopupActions(popup, kind, tagged, ll);
   popup.on("close", () => {
     if (pinnedId === id) pinnedId = null;
   });
