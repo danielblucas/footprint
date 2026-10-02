@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # npm dependencies — monthly cadence, capped at 5 open PRs to keep noise down.
+  # Security fixes still come in immediately via Dependabot security updates,
+  # which run independently of this schedule.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
